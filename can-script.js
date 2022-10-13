@@ -1,9 +1,8 @@
-// create a variable to store the products 'database' in
+// Créer une variable dans laquelle sera stockée la base de données
 var products;
 
-// use fetch to retrieve it, and report any errors that occur in the fetch operation
-// once the products have been successfully loaded and formatted as a JSON object
-// using response.json(), run the initialize() function
+// récupération de la base de donnée et si la récupération est réussie alors
+//lancer la fonction d'initialisation, autrement avertir de l'erreur
 fetch('products.json').then(function (response) {
   if (response.ok) {
     response.json().then(function (json) {
@@ -15,179 +14,156 @@ fetch('products.json').then(function (response) {
   }
 });
 
-// sets up the app logic, declares required variables, contains all the other functions
+// prépare les variables importante et lance la première fonction une fois finie
 function initialize() {
-  // grab the UI elements that we need to manipulate
+  // Récupère tous les éléments à manipuler
   var category = document.querySelector('#category');
   var searchTerm = document.querySelector('#searchTerm');
   var searchBtn = document.querySelector('button');
   var main = document.querySelector('main');
 
-  // keep a record of what the last category and search term entered were
+  // Garde en mémoire la dernière saisie de catégorie
   var lastCategory = category.value;
-  // no search has been made yet
+  // Aucune recherche n'a été tapée
   var lastSearch = '';
 
-  // these contain the results of filtering by category, and search term
-  // finalGroup will contain the products that need to be displayed after
-  // the searching has been done. Each will be an array containing objects.
-  // Each object will represent a product
+  // Déclaration de la liste intermédiaire et de la liste finale
+  // qui seront utilisée lors de l'affichage
   var categoryGroup;
   var finalGroup;
 
-  // To start with, set finalGroup to equal the entire products database
-  // then run updateDisplay(), so ALL products are displayed initially.
+  // D'abord, on affiche l'intégralité des produits par défaut
   finalGroup = products;
   updateDisplay();
 
-  // Set both to equal an empty array, in time for searches to be run
+  // On les remets à 0 pour plus tard
   categoryGroup = [];
   finalGroup = [];
 
-  // when the search button is clicked, invoke selectCategory() to start
-  // a search running to select the category of products we want to display
+  // Lorsque le bouton recherche est cliqué, lancer le tri de catégorie
   searchBtn.onclick = selectCategory;
 
   function selectCategory(e) {
-    // Use preventDefault() to stop the form submitting — that would ruin
-    // the experience
+    // Empeche la validation du formulaire
     e.preventDefault();
 
-    // Set these back to empty arrays, to clear out the previous search
+    // Remets les arrays à vide
     categoryGroup = [];
     finalGroup = [];
 
-    // if the category and search term are the same as they were the last time a
-    // search was run, the results will be the same, so there is no point running
-    // it again — just return out of the function
+    // Si la saisie est inchangée, ne rien changer et sortir de la fonction
     if (category.value === lastCategory && searchTerm.value.trim() === lastSearch) {
       return;
     } else {
-      // update the record of last category and search term
+      // Mets à jour selon la nouvelle recherche
       lastCategory = category.value;
       lastSearch = searchTerm.value.trim();
-      // In this case we want to select all products, then filter them by the search
-      // term, so we just set categoryGroup to the entire JSON object, then run selectProducts()
+      // Si aucune catégorie particulière n'est choisie, on inclut tous les produits dans la liste
+      // avant de passer au tri produit
       if (category.value === 'All') {
         categoryGroup = products;
         selectProducts();
-        // If a specific category is chosen, we need to filter out the products not in that
-        // category, then put the remaining products inside categoryGroup, before running
-        // selectProducts()
+        // Si une catégorie précise est choisie, il faut filtrer les produits par catégorie.
       } else {
-        // the values in the <option> elements are uppercase, whereas the categories
-        // store in the JSON (under "type") are lowercase. We therefore need to convert
-        // to lower case before we do a comparison
+        // La base de données est en minuscule, mais les catégories ont une majuscule,
+        // on les passe donc en minuscule pour la recherche
         var lowerCaseType = category.value.toLowerCase();
         for (var i = 0; i < products.length; i++) {
-          // If a product's type property is the same as the chosen category, we want to
-          // dispay it, so we push it onto the categoryGroup array
+          // Si le produit fait partie de la catégorie choisie, ajout au groupe final
           if (products[i].type === lowerCaseType) {
             categoryGroup.push(products[i]);
           }
         }
 
-        // Run selectProducts() after the filtering has bene done
+        // Une fois ce tri par catégorie fait, tri des produits sur la base de l'input utilisateur
         selectProducts();
       }
     }
   }
 
-  // selectProducts() Takes the group of products selected by selectCategory(), and further
-  // filters them by the tnered search term (if one has bene entered)
+  // Précise d'avantage la recherche en triant les produits qui correspondent à l'input
   function selectProducts() {
-    // If no search term has been entered, just make the finalGroup array equal to the categoryGroup
-    // array — we don't want to filter the products further — then run updateDisplay().
+    // On affiche seulement le resultat du premier tri si rien n'est tapé
     if (searchTerm.value.trim() === '') {
       finalGroup = categoryGroup;
       updateDisplay();
     } else {
-      // Make sure the search term is converted to lower case before comparison. We've kept the
-      // product names all lower case to keep things simple
+      // On passe la saisie en minuscule pour éviter la casse
       var lowerCaseSearchTerm = searchTerm.value.trim().toLowerCase();
-      // For each product in categoryGroup, see if the search term is contained inside the product name
-      // (if the indexOf() result doesn't return -1, it means it is) — if it is, then push the product
-      // onto the finalGroup array
+      // Tri des produits restants dans la liste, ajout de ceux qui correspondent à la recherche à la liste finale
       for (var i = 0; i < categoryGroup.length; i++) {
         if (categoryGroup[i].name.indexOf(lowerCaseSearchTerm) !== -1) {
           finalGroup.push(categoryGroup[i]);
         }
       }
 
-      // run updateDisplay() after this second round of filtering has been done
+      // Une fois que c'est fait, on mets à jour l'affichage
       updateDisplay();
     }
 
   }
 
-  // start the process of updating the display with the new set of products
+  // Mets à jour l'affichage
   function updateDisplay() {
-    // remove the previous contents of the <main> element
+    // Vide le contenu précédent du main
     while (main.firstChild) {
       main.removeChild(main.firstChild);
     }
 
-    // if no products match the search term, display a "No results to display" message
+    // Si la liste est vide, afficher qu'il n'y a rien à afficher 
     if (finalGroup.length === 0) {
       var para = document.createElement('p');
-      para.textContent = 'No results to display!';
+      para.textContent = 'Aucun résultat !';
       main.appendChild(para);
-      // for each product we want to display, pass its product object to fetchBlob()
+      // On fait rechercher chaque terme de la liste dans la fonction fetch
     } else {
       for (var i = 0; i < finalGroup.length; i++) {
-        fetchBlob(finalGroup[i]);
+        showProduct(finalGroup[i]);
       }
     }
   }
 
-  // fetchBlob uses fetch to retrieve the image for that product, and then sends the
-  // resulting image display URL and product object on to showProduct() to finally
-  // display it
-  function fetchBlob(product) {
-    // construct the URL path to the image file from the product.image property
-    var url = 'images/' + product.image;
-    // Use fetch to fetch the image, and convert the resulting response to a blob
-    // Again, if any errors occur we report them in the console.
-    fetch(url).then(function (response) {
-      if (response.ok) {
-        response.blob().then(function (blob) {
-          // Convert the blob to an object URL — this is basically an temporary internal URL
-          // that points to an object stored inside the browser
-          var objectURL = URL.createObjectURL(blob);
-          // invoke showProduct
-          showProduct(objectURL, product);
-        });
-      } else {
-        console.log('Network request for "' + product.name + '" image failed with response ' + response.status + ': ' + response.statusText);
-      }
-    });
-  }
+  // // Va chercher les images associées aux produits
+  // function fetchBlob(product) {
+  //   // contruit le chemin vers l'image du produit
+  //   var url = 'images/' + product.image;
+  //   // 
+  //   fetch(url).then(function (response) {
+  //     if (response.ok) {
+  //       response.blob().then(function (blob) {
+  //         // Convert the blob to an object URL — this is basically an temporary internal URL
+  //         // that points to an object stored inside the browser
+  //         var objectURL = URL.createObjectURL(blob);
+  //         showProduct(objectURL, product);
+  //       });
+  //     } else {
+  //       console.log('Network request for "' + product.name + '" image failed with response ' + response.status + ': ' + response.statusText);
+  //     }
+  //   });
+  // }
 
-  // Display a product inside the <main> element
-  function showProduct(objectURL, product) {
-    // create <section>, <h2>, <p>, and <img> elements
+  // Affiche les produits dans le main
+  function showProduct(product) {
+    // Créer la fondation html pour l'affichage des images
     var section = document.createElement('section');
     var heading = document.createElement('h2');
     var para = document.createElement('p');
     var image = document.createElement('img');
 
-    // give the <section> a classname equal to the product "type" property so it will display the correct icon
+    // Assigne à la section la classe correspondant au type de produit
     section.setAttribute('class', product.type);
 
-    // Give the <h2> textContent equal to the product "name" property, but with the first character
-    // replaced with the uppercase version of the first character
+    // Donne le nom correspondant au produit mis à la majuscule
     heading.textContent = product.name.replace(product.name.charAt(0), product.name.charAt(0).toUpperCase());
 
-    // Give the <p> textContent equal to the product "price" property, with a $ sign in front
-    // toFixed(2) is used to fix the price at 2 decimal places, so for example 1.40 is displayed
-    // as 1.40, not 1.4.
+    // Affiche le prix dans le <p>
     para.textContent = '$' + product.price.toFixed(2);
 
-    // Set the src of the <img> element to the ObjectURL, and the alt to the product "name" property
-    image.src = objectURL;
+    // Raccorde l'image au produit
+    image.src = "images/"+product.name+".jpg";
     image.alt = product.name;
 
-    // append the elements to the DOM as appropriate, to add the product to the UI
+    // Ajoute tous ces éléments à la page
     main.appendChild(section);
     section.appendChild(heading);
     section.appendChild(para);
