@@ -160,7 +160,7 @@ function initialize() {
     para.textContent = '$' + product.price.toFixed(2);
 
     // Raccorde l'image au produit
-    image.src = "images/"+product.name+".jpg";
+    image.src = "images/"+product.image;
     image.alt = product.name;
 
     // Ajoute tous ces éléments à la page
