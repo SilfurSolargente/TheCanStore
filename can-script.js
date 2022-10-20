@@ -9,6 +9,7 @@ document.querySelector('button').addEventListener(
     addDonnee();
   });
 
+
 //recup données
 function addDonnee() {
   fetch('produits.json').then(function (response) {
@@ -22,6 +23,47 @@ function addDonnee() {
   });
 }
 
+  document.getElementById('searchTerm').addEventListener("keyup", function(event){autocompleteMatch(event)});
+  function autocompleteMatch(event) {
+    var input = event.target;//recuperation de l'element input
+    var saisie = input.value;//recuperation de la saisie
+    var min_characters = 1;// minimum de caractères de la saisie
+    if (!isNaN(saisie) || saisie.length < min_characters ) { 
+      return [];
+    }
+    if (!isNaN(saisie) || saisie.length < min_characters ) { 
+      return [];
+    }
+    fetch('produits.json')//fetch
+  .then(response => response.json())
+  .then(response => traiterReponse(response, saisie))
+  .catch(error => console.log("Erreur : " + error));
+  }
+
+
+  function traiterReponse(searchTerms, saisie)
+{
+	var listeValeurs = document.getElementById('listeValeurs');
+  listeValeurs.innerHTML = "";//mise à blanc des options
+  var reg = new RegExp(saisie, 'i'); // ajout du flag insensitive au constructeur de RegExp pour rendre l'autocomplétion insensible à la casse (case)
+  let terms = searchTerms.filter(term => term.nom.match(reg));//recup des termes qui match avec la saisie
+  	  for (i=0; i<terms.length; i++) {//création des options
+        var option = document.createElement('option');
+                    option.value = terms[i].nom;
+                    listeValeurs.appendChild(option);
+  }
+}
+
+document.forms[0].categorie.addEventListener("change", function() {
+  addDonnee();
+});
+document.forms[0].nutri.addEventListener("change", function() {
+    addDonnee();
+});
+document.forms[0].searchTerm.addEventListener("change", function() {
+      addDonnee();
+});
+
 //triage
 function triage(products) {
   var valeur = { 0: "tous", 1: "legumes", 2: "soupe", 3: "viande" }
@@ -30,6 +72,13 @@ function triage(products) {
   var lowerCaseSearchTerm = document.querySelector('#searchTerm').value.trim().toLowerCase();
 
   var finalGroup = [];
+  var i, j, tmp;
+    for (i = products.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        tmp = products[i];
+        products[i] = products[j];
+        products[j] = tmp;
+      }
 
   products.forEach(product => {
     if (product.type === type || type === 'tous') {//sur la categorie
