@@ -111,9 +111,16 @@ function showProduct(finalGroup) {
   else {
     finalGroup.forEach(product => {
       var section = document.createElement('div');
+      var bouton = document.createElement('button')
+      var cadre = document.createElement('div')
       section.setAttribute('class', product.type);
       section.classList.add("card");
       section.classList.add("text-center");
+      bouton.setAttribute('class', 'button');
+      bouton.classList.add("btn")
+      bouton.classList.add("btn-outline-dark")
+      bouton.classList.add("btn-lg")
+      bouton.textContent = "Acheter"
       var heading = document.createElement('div');
       heading.textContent = product.nom.replace(product.nom.charAt(0), product.nom.charAt(0).toUpperCase());
       heading.className = 'card-title'; 
@@ -133,7 +140,9 @@ function showProduct(finalGroup) {
       foot.appendChild(para);
       foot.appendChild(nutri);
       section.appendChild(image);
-      main.appendChild(section);
+      section.appendChild(bouton);
+      main.appendChild(cadre);
+      cadre.appendChild(section);
     });
   }
 }
