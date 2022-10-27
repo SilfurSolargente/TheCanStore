@@ -16,14 +16,15 @@
 </html>
 
 <body>
-  <nav class="navbar bg-light">
+  <nav class="navbar" style="background-color: #7851a9">
     <div class="container-fluid">
-      <a class="navbar-brand">Le jardin en boite</a>
+      <a class="navbar-brand">
+        <img src="icons/silfur.png" alt="logo" width="30" height="30" class="d-inline-block align-text-top"> Le jardin en boite de Silfur</a>
       <form name="choix">
         <div>
           <label for="categorie">Choisissez une categorie :</label>
           <select name="categorie">
-            <option selected value="0">Tous</option>
+            <option selected value="0">Toutes</option>
             <option value="1">Légumes</option>
             <option value="2">Soupes</option>
             <option value="3">Viandes</option>
@@ -45,7 +46,14 @@
           <datalist id="listeValeurs">
           </datalist>
       
-          <button>Voir le résultat</button>
+          <button>Réinitialiser</button>
+          <button type="button" class="btn btn-primary position-relative">
+            Panier
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              0
+              <span class="visually-hidden">unread messages</span>
+            </span>
+          </button>
         </div>
       </form>
     </div>

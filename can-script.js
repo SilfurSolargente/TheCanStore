@@ -6,6 +6,7 @@ addDonnee();
 document.querySelector('button').addEventListener(
   'click', function (event) {
     event.preventDefault();
+    document.forms.choix.reset()
     addDonnee();
   });
 
