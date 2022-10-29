@@ -2,7 +2,7 @@
 addDonnee();
 
 
-//sur le click
+//Réinitialise les formulaires
 document.querySelector('button').addEventListener(
   'click', function (event) {
     event.preventDefault();
@@ -11,8 +11,10 @@ document.querySelector('button').addEventListener(
   });
 
 
-//recup données
-function addDonnee() {
+
+function addDonnee()
+// Récupère le json, et lance la fonction triage si le json est récupéré.
+{
   fetch('produits.json').then(function (response) {
     if (response.ok) {
       response.json().then(function (json) {
@@ -25,7 +27,9 @@ function addDonnee() {
 }
 
   document.getElementById('searchTerm').addEventListener("keyup", function(event){autocompleteMatch(event)});
-  function autocompleteMatch(event) {
+  function autocompleteMatch(event)
+  // Observe la saisie de l'utilisateur pour l'envoyer à la fonction d'autocomplétion (si le json est chargé)
+  {
     var input = event.target;//recuperation de l'element input
     var saisie = input.value;//recuperation de la saisie
     var min_characters = 1;// minimum de caractères de la saisie
@@ -43,6 +47,7 @@ function addDonnee() {
 
 
   function traiterReponse(searchTerms, saisie)
+  // Créer une liste de suggestion et l'affiche pour l'autocomplétion de la recherche.
 {
 	var listeValeurs = document.getElementById('listeValeurs');
   listeValeurs.innerHTML = "";//mise à blanc des options
@@ -55,6 +60,7 @@ function addDonnee() {
   }
 }
 
+// Lancement de la fonction addDonnee pour mettre à jour l'affichage à chaque changement dans la recherche.
 document.forms[0].categorie.addEventListener("change", function() {
   addDonnee();
 });
@@ -93,6 +99,15 @@ function triage(products) {
 
   showProduct(finalGroup);
 }
+compteur = 0;
+achat = document.getElementsByClassName('button');
+achat.forEach(addEventListener(
+  'click', function (event) {
+  event.preventDefault();
+  compteur +=1;
+  document.getElementById('panier').innerHTML = "";
+  document.getElementById('panier').innerHTML = compteur;
+}))
 
 //Affichage
 function showProduct(finalGroup) {
@@ -116,7 +131,7 @@ function showProduct(finalGroup) {
       section.setAttribute('class', product.type);
       section.classList.add("card");
       section.classList.add("text-center");
-      bouton.setAttribute('class', 'button');
+      bouton.setAttribute('class', 'button'); // ajout du bouton acheter
       bouton.classList.add("btn")
       bouton.classList.add("btn-outline-dark")
       bouton.classList.add("btn-lg")
@@ -142,7 +157,7 @@ function showProduct(finalGroup) {
       section.appendChild(image);
       section.appendChild(bouton);
       main.appendChild(cadre);
-      cadre.appendChild(section);
+      cadre.appendChild(section); // Mise en forme du bouton acheter
     });
   }
 }
