@@ -99,15 +99,13 @@ function triage(products) {
 
   showProduct(finalGroup);
 }
-compteur = 0;
-achat = document.getElementsByClassName('button');
-achat.forEach(addEventListener(
-  'click', function (event) {
-  event.preventDefault();
+compteur = 0; // Définition de la variable qui compte le nombre de produits dans le panier
+function ajouterPanier() {
+  //Ajoute 1 au compteur du panier
   compteur +=1;
   document.getElementById('panier').innerHTML = "";
   document.getElementById('panier').innerHTML = compteur;
-}))
+}
 
 //Affichage
 function showProduct(finalGroup) {
@@ -135,6 +133,7 @@ function showProduct(finalGroup) {
       bouton.classList.add("btn")
       bouton.classList.add("btn-outline-dark")
       bouton.classList.add("btn-lg")
+      bouton.setAttribute("onclick", "ajouterPanier()");
       bouton.textContent = "Acheter"
       var heading = document.createElement('div');
       heading.textContent = product.nom.replace(product.nom.charAt(0), product.nom.charAt(0).toUpperCase());
