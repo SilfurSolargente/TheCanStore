@@ -36,9 +36,6 @@ function addDonnee()
     if (!isNaN(saisie) || saisie.length < min_characters ) { 
       return [];
     }
-    if (!isNaN(saisie) || saisie.length < min_characters ) { 
-      return [];
-    }
     fetch('produits.json')//fetch
   .then(response => response.json())
   .then(response => traiterReponse(response, saisie))
